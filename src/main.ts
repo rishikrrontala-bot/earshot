@@ -4,6 +4,7 @@ import { Listener } from './audio/listener.ts';
 import { Transmitter } from './audio/transmitter.ts';
 import { Waterfall } from './ui/waterfall.ts';
 
+const IDLE_VEIL = 'Eighteen tones, waiting. Start listening to bring the band up.';
 const CARRIER_CONFIDENCE = 2.6;
 const CARRIER_HOLD_MS = 450;
 
@@ -102,10 +103,25 @@ const listener = new Listener({
 
     item.append(body, meta);
     log.prepend(item);
+    fresh.add(item);
   },
 });
 
 const transmitter = new Transmitter();
+
+/** Arrival state persists until the reader actually looks, then resolves —
+ *  otherwise every message stays lit and the state stops carrying information. */
+const fresh = new Set<HTMLElement>();
+const notice = (): void => {
+  if (fresh.size === 0) return;
+  for (const item of fresh) {
+    delete item.dataset.fresh;
+    item.querySelector('.log__meta span:last-child')?.remove();
+  }
+  fresh.clear();
+};
+log.addEventListener('pointerdown', notice);
+log.addEventListener('focusin', notice);
 
 /* ---------- modes ---------- */
 
@@ -113,12 +129,12 @@ type Mode = 'listen' | 'send';
 
 function setMode(next: Mode): void {
   const listening = next === 'listen';
-  tabListen.setAttribute('aria-selected', String(listening));
-  tabSend.setAttribute('aria-selected', String(!listening));
+  tabListen.setAttribute('aria-pressed', String(listening));
+  tabSend.setAttribute('aria-pressed', String(!listening));
   panelListen.hidden = !listening;
   panelSend.hidden = listening;
-  if (listening && !listener.running) setVeil('Start listening to bring the band up.');
-  else if (!listening && !transmitter.sending) setVeil('Type a message, then transmit.');
+  if (listening && !listener.running) setVeil(IDLE_VEIL);
+  else if (!listening && !transmitter.sending) setVeil('Eighteen tones, waiting. Type a message, then transmit.');
   else setVeil(null);
 }
 
@@ -135,7 +151,7 @@ micKey.addEventListener('click', async () => {
     listenState.textContent = 'Microphone stopped';
     setLamp('idle', 'No carrier');
     snrOut.textContent = '—';
-    setVeil('Start listening to bring the band up.');
+    setVeil(IDLE_VEIL);
     return;
   }
   micError.hidden = true;

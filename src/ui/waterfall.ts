@@ -77,7 +77,7 @@ export class Waterfall {
     const inset = (colW - barW) / 2;
 
     // Ghost band: every tone present even in silence.
-    ctx.fillStyle = 'oklch(0.360 0.020 254 / 0.45)';
+    ctx.fillStyle = 'oklch(0.360 0.020 254 / 0.9)';
     for (let c = 0; c < cols; c++) ctx.fillRect(c * colW + inset, 0, barW, h);
 
     for (let r = 0; r < this.rows.length; r++) {

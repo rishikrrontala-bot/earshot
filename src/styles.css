@@ -1,6 +1,10 @@
+@import './fonts.css';
+
 /* Earshot — acoustic coupler world. Eight fixed values, no gradients anywhere. */
 
 :root {
+  color-scheme: dark;
+
   --ground: oklch(0.145 0.018 254);
   --panel:  oklch(0.194 0.017 254);
   --gauze:  oklch(0.262 0.015 254);
@@ -69,6 +73,8 @@ body {
   gap: var(--s5);
 }
 
+.side { display: flex; flex-direction: column; gap: var(--s5); }
+
 .rig__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s4); }
 
 .ident__mark {
@@ -128,7 +134,7 @@ body {
   position: absolute; inset: 0;
   display: grid; place-items: center;
   padding: var(--s5);
-  background: oklch(0.194 0.017 254 / 0.72);
+  background: oklch(0.194 0.017 254 / 0.45);
   transition: opacity var(--beat) var(--ease), visibility var(--beat);
 }
 .field__veil[hidden] { display: grid; opacity: 0; visibility: hidden; pointer-events: none; }
@@ -160,7 +166,7 @@ body {
 }
 .modes__btn + .modes__btn { border-left: 1px solid var(--gauze); }
 .modes__btn:hover { color: var(--bone); }
-.modes__btn[aria-selected='true'] { background: var(--ground); color: var(--bone); box-shadow: inset 0 -2px 0 var(--glow); }
+.modes__btn[aria-pressed='true'] { background: var(--ground); color: var(--bone); box-shadow: inset 0 -2px 0 var(--glow); }
 
 /* ---------- panels ---------- */
 
@@ -186,7 +192,7 @@ body {
   resize: none;
   transition: border-color var(--beat) var(--ease);
 }
-.input::placeholder { color: var(--ghost); }
+.input::placeholder { color: var(--muted); }
 .input:hover { border-color: var(--ghost); }
 .input:focus { border-color: var(--glow); outline: none; }
 
@@ -214,7 +220,7 @@ body {
   transition: background var(--beat) var(--ease), color var(--beat) var(--ease), border-color var(--beat) var(--ease);
 }
 .key:hover:not(:disabled) { background: var(--glow); color: var(--ground); }
-.key:disabled { border-color: var(--gauze); color: var(--ghost); cursor: not-allowed; }
+.key:disabled { border-color: var(--gauze); color: var(--muted); cursor: not-allowed; }
 .key--wide { align-self: flex-start; }
 .key--go[data-live='1'] { background: var(--glow); color: var(--ground); }
 
@@ -264,9 +270,28 @@ body {
 .readout__cell { display: flex; flex-direction: column; gap: var(--s1); padding: var(--s3); }
 .readout__cell + .readout__cell { border-left: 1px solid var(--gauze); }
 .readout__k { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-.readout__v { font-family: var(--data); font-size: var(--t-sm); color: var(--bone); }
+.readout__v { font-family: var(--data); font-size: var(--t-sm); color: var(--bone); white-space: nowrap; }
+
+/* The contract promises the field owns the upper two-thirds. Below this width
+   it does; above it, the column layout left 632px of dead ground either side,
+   so the grid spends that on the field and lifts the readout above the fold. */
+@media (min-width: 1024px) {
+  .rig {
+    max-width: 1180px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(380px, 1fr);
+    grid-template-areas: 'head head' 'field side';
+    column-gap: var(--s5);
+    row-gap: var(--s5);
+    align-items: start;
+  }
+  .rig__head { grid-area: head; }
+  .field { grid-area: field; aspect-ratio: auto; height: clamp(440px, 66vh, 680px); }
+  .side { grid-area: side; }
+}
 
 @media (max-width: 460px) {
+  .side { gap: var(--s4); }
   :root { --t-xl: 1.75rem; }
   .rig { padding-inline: var(--s3); gap: var(--s4); }
   .field { aspect-ratio: 5 / 4; }

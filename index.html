@@ -6,9 +6,7 @@
 <title>Earshot — send a message with sound, no network</title>
 <meta name="description" content="One device plays a tone sequence. Every phone in earshot decodes it back to text. No internet, no pairing, no install." />
 <meta name="theme-color" content="#0a0d12" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<meta name="color-scheme" content="dark" />
 <link rel="stylesheet" href="/src/styles.css" />
 </head>
 <body>
@@ -45,19 +43,20 @@
     <div class="field__scale" id="fieldScale" aria-hidden="true"></div>
   </section>
 
-  <div class="modes" role="tablist" aria-label="Mode">
-    <button class="modes__btn" id="tabListen" role="tab" aria-selected="false" aria-controls="panelListen" type="button">
+  <div class="side">
+  <div class="modes">
+    <button class="modes__btn" id="tabListen" aria-pressed="false" type="button">
       <svg class="gl" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7M5 4.5v3M11 4.5v3M2.5 10.5a5.5 5.5 0 0 0 11 0"/></svg>
       Listen
     </button>
-    <button class="modes__btn" id="tabSend" role="tab" aria-selected="false" aria-controls="panelSend" type="button">
+    <button class="modes__btn" id="tabSend" aria-pressed="false" type="button">
       <svg class="gl" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5h2.5L9 3.5v9L5.5 9.5H3z"/><path d="M11.5 6a3 3 0 0 1 0 4"/></svg>
       Broadcast
     </button>
   </div>
 
   <main class="stack">
-    <section class="panel" id="panelListen" role="tabpanel" aria-labelledby="tabListen" hidden>
+    <section class="panel" id="panelListen" aria-label="Received messages" hidden>
       <div class="panel__bar">
         <h2 class="panel__title">Received</h2>
         <span class="panel__note" id="listenState">Microphone not started</span>
@@ -71,7 +70,7 @@
       </div>
     </section>
 
-    <section class="panel" id="panelSend" role="tabpanel" aria-labelledby="tabSend" hidden>
+    <section class="panel" id="panelSend" aria-label="Broadcast a message" hidden>
       <div class="panel__bar">
         <h2 class="panel__title">Broadcast</h2>
         <span class="panel__note" id="sendState">Ready</span>
@@ -111,6 +110,7 @@
     <div class="readout__cell"><span class="readout__k">Signal</span><span class="readout__v" id="snr">—</span></div>
     <div class="readout__cell"><span class="readout__k">Decoded</span><span class="readout__v" id="count">0</span></div>
   </footer>
+  </div>
 </div>
 <script type="module" src="/src/main.ts"></script>
 </body>
