@@ -1,0 +1,7 @@
+node_modules
+dist
+.DS_Store
+.impeccable/config.local.json
+_research/
+.claude/
+.impeccable/

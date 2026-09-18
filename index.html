@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Earshot — send a message with sound, no network</title>
+<meta name="description" content="One device plays a tone sequence. Every phone in earshot decodes it back to text. No internet, no pairing, no install." />
+<meta name="theme-color" content="#0a0d12" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+<!--
+  IMPECCABLE DIRECTION CONTRACT · seed 6d03e5ab · form 4 of 7 (acoustic coupler), assigned by roll
+  THESIS: Earshot is the acoustic coupler's descendant — data across an air gap as audible sound.
+    It refuses the dark-glass-and-neon hackathon hero and the waveform-visualiser cliche.
+  OWN-WORLD: Ink-black ground, two hues, one amber carrier glow. Screen-printed panel legends in
+    tracked caps; data in mono. Eight fixed values, zero gradients. Instrument grammar, never bevels.
+  STORY: The network is gone. I type a line, press transmit, and every phone in the room reads it.
+  FIRST VIEWPORT: Waterfall field owns the upper two-thirds, eighteen tone columns standing as
+    unlit ghosts. Carrier lamp top-right. Mode switch, then composer. Transmit key bottom-left.
+  FORM: Struck-tone waterfall — every tone always present, the sounding one struck forward; values
+    snap, the old glow decays one beat. Airtime is staged and counted, never a spinner.
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->
+<div class="rig">
+  <header class="rig__head">
+    <div class="ident">
+      <h1 class="ident__mark">Earshot</h1>
+      <p class="ident__sub">One device plays a tone. Every phone in earshot reads the message &mdash; no internet, no pairing, no install.</p>
+    </div>
+    <div class="lamp" id="lamp" data-state="idle">
+      <span class="lamp__bulb" aria-hidden="true"></span>
+      <span class="lamp__label" id="lampLabel">No carrier</span>
+    </div>
+  </header>
+
+  <section class="field" aria-label="Live tone spectrum">
+    <canvas id="waterfall" class="field__canvas"></canvas>
+    <div class="field__veil" id="fieldVeil">
+      <p class="field__veilText" id="fieldVeilText">Eighteen tones, waiting. Start listening to bring the band up.</p>
+    </div>
+    <div class="field__scale" id="fieldScale" aria-hidden="true"></div>
+  </section>
+
+  <div class="modes" role="tablist" aria-label="Mode">
+    <button class="modes__btn" id="tabListen" role="tab" aria-selected="false" aria-controls="panelListen" type="button">
+      <svg class="gl" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7M5 4.5v3M11 4.5v3M2.5 10.5a5.5 5.5 0 0 0 11 0"/></svg>
+      Listen
+    </button>
+    <button class="modes__btn" id="tabSend" role="tab" aria-selected="false" aria-controls="panelSend" type="button">
+      <svg class="gl" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6.5h2.5L9 3.5v9L5.5 9.5H3z"/><path d="M11.5 6a3 3 0 0 1 0 4"/></svg>
+      Broadcast
+    </button>
+  </div>
+
+  <main class="stack">
+    <section class="panel" id="panelListen" role="tabpanel" aria-labelledby="tabListen" hidden>
+      <div class="panel__bar">
+        <h2 class="panel__title">Received</h2>
+        <span class="panel__note" id="listenState">Microphone not started</span>
+      </div>
+      <div class="panel__body">
+        <button class="key key--wide" id="micKey" type="button">Start listening</button>
+        <p class="hint" id="micHint">Earshot needs the microphone to hear tones. Nothing is recorded and nothing leaves this device.</p>
+        <p class="alert" id="micError" role="alert" hidden></p>
+        <ol class="log" id="log" aria-live="polite"></ol>
+        <p class="empty" id="logEmpty">No messages yet. Keep this open and play a broadcast nearby.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="panelSend" role="tabpanel" aria-labelledby="tabSend" hidden>
+      <div class="panel__bar">
+        <h2 class="panel__title">Broadcast</h2>
+        <span class="panel__note" id="sendState">Ready</span>
+      </div>
+      <div class="panel__body">
+        <label class="lbl" for="msg">Message</label>
+        <textarea id="msg" class="input" rows="2" maxlength="120" spellcheck="false"
+          placeholder="Shelter open at Lincoln High"></textarea>
+        <div class="meter">
+          <span class="meter__cell"><b id="chars">0</b>/120 bytes</span>
+          <span class="meter__cell"><b id="airtime">0.0</b>s airtime</span>
+          <label class="meter__cell meter__cell--ctl" for="repeats">
+            Repeats
+            <select id="repeats" class="sel">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3" selected>3</option>
+              <option value="5">5</option>
+            </select>
+          </label>
+        </div>
+        <div class="send">
+          <button class="key key--go" id="sendKey" type="button" disabled>Transmit</button>
+          <div class="stage" id="stage" hidden>
+            <div class="stage__track"><div class="stage__fill" id="stageFill"></div></div>
+            <p class="stage__read"><span id="stageText">—</span></p>
+          </div>
+        </div>
+        <p class="hint">Open this page on another device and press Listen before you transmit. Anything within earshot receives it &mdash; this is a broadcast, not a private message.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="readout">
+    <div class="readout__cell"><span class="readout__k">Bitrate</span><span class="readout__v">125 bps</span></div>
+    <div class="readout__cell"><span class="readout__k">Band</span><span class="readout__v">1.50–3.63 kHz</span></div>
+    <div class="readout__cell"><span class="readout__k">Signal</span><span class="readout__v" id="snr">—</span></div>
+    <div class="readout__cell"><span class="readout__k">Decoded</span><span class="readout__v" id="count">0</span></div>
+  </footer>
+</div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
