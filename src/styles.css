@@ -223,7 +223,13 @@ body {
 /* airtime staged, never a spinner */
 .stage { flex: 1 1 200px; min-width: 180px; display: flex; flex-direction: column; gap: var(--s2); }
 .stage__track { height: 3px; background: var(--gauze); }
-.stage__fill { height: 100%; width: 0; background: var(--glow); transition: width 90ms linear; }
+.stage__fill {
+  height: 100%; width: 100%;
+  background: var(--glow);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 90ms linear;
+}
 .stage__read { margin: 0; font-family: var(--data); font-size: var(--t-xs); color: var(--muted); }
 
 .hint { margin: 0; font-size: var(--t-sm); color: var(--muted); max-width: 68ch; }

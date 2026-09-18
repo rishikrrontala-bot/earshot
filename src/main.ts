@@ -193,7 +193,7 @@ sendKey.addEventListener('click', async () => {
   try {
     await transmitter.send(text, Number(repeatsSel.value), (p) => {
       for (const tone of p.newTones) waterfall.pushTone(tone);
-      stageFill.style.width = `${((p.elapsed / p.total) * 100).toFixed(1)}%`;
+      stageFill.style.transform = `scaleX(${(p.elapsed / p.total).toFixed(4)})`;
       stageText.textContent =
         `Symbol ${p.symbol} of ${p.symbols} · pass ${p.repeat} of ${p.repeats} · ${p.elapsed.toFixed(1)}s of ${p.total.toFixed(1)}s`;
     });
